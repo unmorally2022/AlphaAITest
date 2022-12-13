@@ -50,3 +50,11 @@ C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug
 C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.dll
 C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.pdb
 C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.AssemblyReference.cache
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\bin\Debug\AlphaAIServer.dll
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\bin\Debug\AlphaAIServer.pdb
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\bin\Debug\Player.IO GameLibrary.dll
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\bin\Debug\Player.IO GameLibrary.xml
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.CoreCompileInputs.cache
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.CopyComplete
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.dll
+D:\adchan doc\unity\github\AlphaAITest\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.pdb

@@ -167,7 +167,7 @@ namespace AlphaAIServer
 
         private void EndGame() {
             Broadcast("GameFinish");
-            var ordered = Players.OrderBy(o => o.Score);
+            var ordered = Players.OrderByDescending(o => o.Score);
             int index = 0;
             int star = 3;
             foreach (Player pl in ordered)
@@ -201,15 +201,11 @@ namespace AlphaAIServer
         // This method is called whenever a player joins the game
         public override void UserJoined(Player player)
         {
-            
-
             player.UserId = player.ConnectUserId;            
             player.name = player.JoinData["userName"];
             player.isReady = false;
             Random rand = new Random();
             player.SpawnPointIndex = rand.Next(0, 4);
-
-            
         }
 
         // This method is called when a player leaves the game
@@ -254,7 +250,7 @@ namespace AlphaAIServer
                     player.Send("UpdateScore", player.Score);
                     break;
                 case "test2":
-                    EndGame();
+                    SeccondInGameLeft = 0;
                     break;
                 case "test3":
 
