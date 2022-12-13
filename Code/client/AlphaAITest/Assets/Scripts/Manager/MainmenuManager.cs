@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainmenuManager : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject PanelRoom;
+
     [SerializeField]
     private GameObject PanelAlert;
     [SerializeField]
@@ -15,6 +19,8 @@ public class MainmenuManager : MonoBehaviour
     [SerializeField]
     private Text TextLoading;
 
+    private int iType;
+
     [SerializeField]
     private InputField IF_username, IF_RoomNameToCreate, IF_RoomNameToJoin;
 
@@ -24,11 +30,15 @@ public class MainmenuManager : MonoBehaviour
         PanelLoading.SetActive(false);
         PanelAlert.SetActive(false);
 
-        AppManager.UserName = "plr" + AppManager.RandomString(4);
-        IF_username.text = AppManager.UserName;
+        AppManager.PlayerIOName = "plr" + AppManager.RandomString(4);
+        IF_username.text = AppManager.PlayerIOName;
 
         showLoading("Connecting to server");
         AuthToServer();
+
+
+        //debug
+        iType = 0;//female
     }
 
     // Update is called once per frame
@@ -40,6 +50,11 @@ public class MainmenuManager : MonoBehaviour
     private void AuthToServer()
     {
         PlayerIOManager.onConnectedToServer = OnConnectedToServer;
+        PlayerIOManager.onConnectToServerError = delegate(PlayerIOClient.ErrorCode errorCode) {
+            hideLoading();
+            PanelRoom.SetActive(false);
+            showAlert("Error", errorCode.ToString());
+    	};
         //PlayerIOManager.onDisconnectFromServer = OnDisconnecFromServer;
         PlayerIOManager.AuthToServer();
     }
@@ -75,8 +90,7 @@ public class MainmenuManager : MonoBehaviour
             RoomErrorMessage(errorCode);
         };
         PlayerIOManager.onCreatedRoom = delegate (string SuccessCallback)
-        {
-            hideLoading();
+        {            
             JoinRoomWithId(RoomId);
         };
         PlayerIOManager.CreateRoom(RoomId);
@@ -92,8 +106,8 @@ public class MainmenuManager : MonoBehaviour
             RoomErrorMessage(errorCode);
         };
         PlayerIOManager.onJoinedRoom = delegate ()
-        {
-            AppManager.LoadYourAsyncScene("GamePlay");
+        {            
+            StartCoroutine(  AppManager.LoadYourAsyncScene("GamePlay"));
             //no action here because server will broadcast player join, and it will process when received message
         };
         //PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
@@ -112,7 +126,7 @@ public class MainmenuManager : MonoBehaviour
         };
         PlayerIOManager.onJoinedRoom = delegate ()
         {
-            AppManager.LoadYourAsyncScene("GamePlay");
+            StartCoroutine(AppManager.LoadYourAsyncScene("GamePlay"));
             //no action here because server will broadcast player join, and it will process when received message
         };
         //PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
@@ -135,7 +149,7 @@ public class MainmenuManager : MonoBehaviour
         if (checkName(IF_username.text))
         {
             if (IF_RoomNameToCreate.text.Length <= 0)
-            {
+            {                
                 showAlert("Game Name", "Game name cannot be empty, please give it name");
             }
             else
@@ -147,7 +161,7 @@ public class MainmenuManager : MonoBehaviour
     public void GUI_JoinRoom() {
         if (checkName(IF_username.text))
         {
-
+            JoinRoomWithId(IF_RoomNameToJoin.text);
         }
     }
     //GUI END -------------------
@@ -205,6 +219,9 @@ public class MainmenuManager : MonoBehaviour
             case PlayerIOClient.ErrorCode.NotASearchColumn:
                 showAlert("Game doesn't exist", "Game does't exist, try join another game type");                
                 break;
+            case PlayerIOClient.ErrorCode.NoServersAvailable:
+                showAlert("Game doesn't exist", "No Server available at this time");
+                break;            
             default:
                 Debug.Log(errorCode);
                 showAlert("Unknown", "Unknown error");                

@@ -45,13 +45,16 @@ public static class PlayerIOManager
     public delegate void OnMessage(Message message);
     public static OnMessage onMessage;
 
-    public static string userid;
+    public static float SmoothNetworkInterpolation = 10;
+
+    public static string PlayerIOid;
     
     static PlayerIOManager()
     {
         // Create a uniq user id from UTC time
-        userid = AppManager.userid;
-        Debug.Log(string.Format("Player IO User Id {0}", userid));
+        PlayerIOid = AppManager.PlayerIOid;
+        Debug.Log(string.Format("Player IO User Id {0}", PlayerIOid));
+        
         //userName = "Name" + System.DateTime.UtcNow.ToString(@"yyyyMddhhmmss");
     }
 
@@ -63,13 +66,15 @@ public static class PlayerIOManager
             GameID,            //Your game id
             "public",                               //Your connection id
             new Dictionary<string, string> {        //Authentication arguments
-				{ "userId", userid },
+				{ "userId", PlayerIOid },
             },
             null,                                   //PlayerInsight segments
             delegate (Client _client)
             {
                 Debug.Log("Successfully connected to Player.IO");
                 client = _client;
+                //debug to localhost
+                client.Multiplayer.DevelopmentServer = new ServerEndpoint("192.168.2.7", 8184);
 
                 if (onConnectedToServer != null)
                     onConnectedToServer();
@@ -116,7 +121,7 @@ public static class PlayerIOManager
         client.Multiplayer.JoinRoom(
                 RoomID,                    //Room id.             
                 new Dictionary<string, string> {
-                { "userName", AppManager.UserName },
+                { "userName", AppManager.PlayerIOName },
                 },
                 delegate (Connection connection)
                 {
@@ -157,7 +162,7 @@ public static class PlayerIOManager
                     client.Multiplayer.JoinRoom(
                         roomInfos[0].Id,                    //Room id.             
                         new Dictionary<string, string> {
-                        { "userName", AppManager.UserName },
+                        { "userName", AppManager.PlayerIOName },
                         },
                         delegate (Connection connection)
                         {
@@ -223,7 +228,7 @@ public static class PlayerIOManager
                     client.Multiplayer.JoinRoom(
                         roomInfos[Random.Range(0, roomInfos.Length)].Id,                    //Room id.             
                         new Dictionary<string, string> {
-                        { "userName", AppManager.UserName },
+                        { "userName", AppManager.PlayerIOName},
                         },
                         delegate (Connection connection)
                         {
@@ -255,7 +260,7 @@ public static class PlayerIOManager
                         true,                               //Should the room be visible in the lobby?
                         null,
                         new Dictionary<string, string> {
-                                { "userName", AppManager.UserName },
+                                { "userName", AppManager.PlayerIOName },
                         },
                         delegate (Connection connection)
                         {

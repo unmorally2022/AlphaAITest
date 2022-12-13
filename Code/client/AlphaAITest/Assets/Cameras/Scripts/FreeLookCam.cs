@@ -111,5 +111,11 @@ namespace UnityStandardAssets.Cameras
 				transform.localRotation = m_TransformTargetRot;
 			}
         }
+
+        public void setCursorLock(bool newLockCursor) {
+            m_LockCursor = newLockCursor;
+            Cursor.lockState = m_LockCursor ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !m_LockCursor;
+        }
     }
 }

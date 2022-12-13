@@ -96,7 +96,6 @@ namespace UnityStandardAssets.Cameras
             m_Target = newTransform;
         }
 
-
         public Transform Target
         {
             get { return m_Target; }
