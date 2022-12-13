@@ -81,6 +81,11 @@ public class GamePlayManager : MonoBehaviour
     private ResultChild1 PrefabResultChild1;
     [SerializeField]
     private Transform ResultChild1Parent;
+        
+    [SerializeField]
+    private Animator[] AnimatorCharSelection;
+    [SerializeField]
+    private UnityStandardAssets.Cameras.LookAtCamera[] LookAtCameraSelection;
 
     private void Awake()
     {
@@ -111,6 +116,7 @@ public class GamePlayManager : MonoBehaviour
         
 
         selectedCharacter = 0;
+        GUI_SelectGender(selectedCharacter);
 
         //request other player
         PlayerIOManager.SendMsg("RequestPlayers");
@@ -175,8 +181,11 @@ public class GamePlayManager : MonoBehaviour
         TextScore.text = string.Format("Score : {0}", newScore.ToString());
     }
 
-    private void stopGame() {
+    private void FinishGame() {
+        TextTimeLeft.text = "00:00";
         PanelResult.SetActive(true);
+        AppManager.gameplayState = AppManager.GameplayState.iddle;
+        thirdPersonUserControl.characterState = AppManager.CharacterState.finish;
     }
 
     //playerio event
@@ -296,16 +305,25 @@ public class GamePlayManager : MonoBehaviour
 
         }
         else if (msg.Type == "GameFinish") {
-            stopGame();
+            FinishGame();
         }        
         else if (msg.Type == "GameResult")
         {
             Debug.Log("GameResult");
             ResultChild1 resultChild1 = Instantiate(PrefabResultChild1, ResultChild1Parent);
             resultChild1.Init(msg.GetInt(1),msg.GetInt(4), msg.GetString(3));
-            //StopGame(msg);
 
-        }        
+            if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControl.getPlayerIOId())
+            {
+                thirdPersonUserControl.m_Character.m_Animator.SetBool("Win",true);
+            }
+            else if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControlMPs[msg.GetString(2)].getPlayerIOId())
+            {
+                thirdPersonUserControlMPs[msg.GetString(2)].m_CharacterMP.m_Animator.SetBool("Win", true);
+            }
+                //StopGame(msg);
+
+            }        
         else if (msg.Type == "PlayerLeft")
         {
             //Debug.Log(string.Format("{0}:{1}", "PlayerLeft", msg));
@@ -435,6 +453,17 @@ public class GamePlayManager : MonoBehaviour
     public void GUI_SelectGender(int newSelectedGender)
     {
         selectedCharacter = newSelectedGender;
+        for (int i = 0; i < AnimatorCharSelection.Length;i++) {
+            if (i == selectedCharacter)
+            {
+                AnimatorCharSelection[i].SetBool("Selected", true);
+                LookAtCameraSelection[i].enabled = true;
+            }
+            else {
+                AnimatorCharSelection[i].SetBool("Selected", false);
+                LookAtCameraSelection[i].enabled = false;
+            }
+        }
     }
 
     public void GUI_BtnReady()
@@ -462,6 +491,7 @@ public class GamePlayManager : MonoBehaviour
         freeLookCam.transform.position = thirdPersonUserControl.m_Character.transform.position;
         //freeLookCam.setCursorLock(true);
         PanelCharSelection.SetActive(false);
+        Destroy(PanelCharSelection);
 
         TextRoomStatus.gameObject.SetActive(true);
 
