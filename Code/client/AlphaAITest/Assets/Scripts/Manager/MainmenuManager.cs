@@ -56,14 +56,19 @@ public class MainmenuManager : MonoBehaviour
     
     private void AuthToServer()
     {
-        PlayerIOManager.onConnectedToServer = OnConnectedToServer;
-        PlayerIOManager.onConnectToServerError = delegate(PlayerIOClient.ErrorCode errorCode) {
-            hideLoading();
-            PanelRoom.SetActive(false);            
-            showAlert("Error", errorCode.ToString(), delegate () { }, null);
-    	};
-        //PlayerIOManager.onDisconnectFromServer = OnDisconnecFromServer;
-        PlayerIOManager.AuthToServer();
+        if (PlayerIOManager.isConnectedToserver()) { }
+        else
+        {
+            PlayerIOManager.onConnectedToServer = OnConnectedToServer;
+            PlayerIOManager.onConnectToServerError = delegate (PlayerIOClient.ErrorCode errorCode)
+            {
+                hideLoading();
+                PanelRoom.SetActive(false);
+                showAlert("Error", errorCode.ToString(), delegate () { }, null);
+            };
+            //PlayerIOManager.onDisconnectFromServer = OnDisconnecFromServer;
+            PlayerIOManager.AuthToServer();
+        }
     }
 
     private void OnConnectedToServer()

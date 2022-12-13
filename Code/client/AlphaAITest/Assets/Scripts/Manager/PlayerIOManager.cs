@@ -336,5 +336,12 @@ public static class PlayerIOManager
         }
         
     }
+
+    public static bool isConnectedToserver() {
+        if (pioconnection == null)
+            return false;
+        else
+            return pioconnection.Connected;
+    }
     
 }
