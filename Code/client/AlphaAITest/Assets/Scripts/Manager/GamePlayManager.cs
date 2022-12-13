@@ -67,6 +67,13 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField]
     private Transform[] CoinSpawnPoint;
 
+    [SerializeField]
+    private GameObject PanelResult;
+    [SerializeField]
+    private ResultChild1 PrefabResultChild1;
+    [SerializeField]
+    private Transform ResultChild1Parent;
+
     private void Awake()
     {
         AppManager.gameplayState = AppManager.GameplayState.iddle;
@@ -87,6 +94,7 @@ public class GamePlayManager : MonoBehaviour
         TextTimeLeft.gameObject.SetActive(false);
         PanelAlert.SetActive(false);
         PanelScore.SetActive(false);
+        PanelResult.SetActive(false);
 
         thirdPersonUserControl.SetPlayerIOId(AppManager.PlayerIOid);
         thirdPersonUserControl.SetPlayerIOName(AppManager.PlayerIOName);
@@ -135,6 +143,10 @@ public class GamePlayManager : MonoBehaviour
 
     public void updateScore(int newScore) {
         TextScore.text = string.Format("Score : {0}", newScore.ToString());
+    }
+
+    private void stopGame() {
+        PanelResult.SetActive(true);
     }
 
     //playerio event
@@ -253,41 +265,20 @@ public class GamePlayManager : MonoBehaviour
             TextTimeLeft.text = stime;
 
         }
-        else if (msg.Type == "GameWinner")
+        else if (msg.Type == "GameFinish") {
+            stopGame();
+        }        
+        else if (msg.Type == "GameResult")
         {
-            //Debug.Log("GameWinner");
-
-            //if (msg.GetString(0) != PlayerIOManager.userid)
-            //{
-            //    int IndexOfCharController = System.Array.IndexOf(PlayerIOManager.PlayersJoinedId, msg.GetString(0));
-            //    if (IndexOfCharController > -1)
-            //    {
-            //        characterOthersController[IndexOfCharController].setToWin();
-            //    }
-            //}
-            //else
-            //{
-            //    int IndexOfCharController = System.Array.IndexOf(PlayerIOManager.PlayersJoinedId, msg.GetString(0));
-            //    if (IndexOfCharController > -1)
-            //    {
-            //        characterControllersMP[IndexOfCharController].setToWin();
-            //    }
-            //}
-
+            Debug.Log("GameResult");
+            ResultChild1 resultChild1 = Instantiate(PrefabResultChild1, ResultChild1Parent);
+            resultChild1.Init(msg.GetInt(1),msg.GetInt(4), msg.GetString(3));
             //StopGame(msg);
 
-        }
-        else if (msg.Type == "GameDraw")
-        {
-            //Debug.Log("GameDraw");
-
-            //StopGame();
-        }
+        }        
         else if (msg.Type == "PlayerLeft")
         {
             //Debug.Log(string.Format("{0}:{1}", "PlayerLeft", msg));
-
-
         }
         else if (msg.Type == "CoinHit")
         {
@@ -461,5 +452,26 @@ public class GamePlayManager : MonoBehaviour
     public void GUI_sendChat() {
         sendChat();
     }
+
+    public void GUI_ExitGame() {
+        PlayerIOManager.LeaveRoom();
+    }
+
+    public void GUI_Test1()
+    {
+        PlayerIOManager.SendMsg("test1");
+    }
+
+    public void GUI_Test2()
+    {
+        PlayerIOManager.SendMsg("test2");
+    }
+
+    public void GUI_Test3()
+    {
+        PlayerIOManager.SendMsg("test3");
+    }
+
+
     //GUI element end;
 }
