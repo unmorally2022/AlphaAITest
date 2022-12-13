@@ -13,6 +13,13 @@ public class MainmenuManager : MonoBehaviour
     private GameObject PanelAlert;
     [SerializeField]
     private Text TextAlert, TextAlertTitle;
+    private delegate void ButtonAlertOkClick();
+    private ButtonAlertOkClick buttonAlertOkClick;
+    private delegate void ButtonAlertCancelClick();
+    private ButtonAlertCancelClick buttonAlertCancelClick;
+    [SerializeField]
+    private GameObject buttonOkAlert, buttonCancelAlert;
+
 
     [SerializeField]
     private GameObject PanelLoading;
@@ -52,8 +59,8 @@ public class MainmenuManager : MonoBehaviour
         PlayerIOManager.onConnectedToServer = OnConnectedToServer;
         PlayerIOManager.onConnectToServerError = delegate(PlayerIOClient.ErrorCode errorCode) {
             hideLoading();
-            PanelRoom.SetActive(false);
-            showAlert("Error", errorCode.ToString());
+            PanelRoom.SetActive(false);            
+            showAlert("Error", errorCode.ToString(), delegate () { }, null);
     	};
         //PlayerIOManager.onDisconnectFromServer = OnDisconnecFromServer;
         PlayerIOManager.AuthToServer();
@@ -64,9 +71,28 @@ public class MainmenuManager : MonoBehaviour
         hideLoading();        
     }
 
-    private void showAlert(string title, string msg) {
+    private void showAlert(string title, string msg, ButtonAlertOkClick newButtonAlertOkClick, ButtonAlertCancelClick newButtonAlertCancelClick) {
         TextAlertTitle.text = title;
         TextAlert.text = msg;
+
+        if (newButtonAlertOkClick == null) {
+            buttonOkAlert.SetActive(false);
+        }
+        else {
+            buttonOkAlert.SetActive(true);
+            buttonAlertOkClick = newButtonAlertOkClick;
+        }
+
+        if (newButtonAlertCancelClick == null)
+        {
+            buttonCancelAlert.SetActive(false);
+        }
+        else {
+            buttonCancelAlert.SetActive(true);
+            buttonAlertCancelClick = newButtonAlertCancelClick;
+        }
+            
+
         PanelAlert.SetActive(true);
     }
 
@@ -137,11 +163,23 @@ public class MainmenuManager : MonoBehaviour
     //GUI -------------------
     public void GUI_ExitGame()
     {
-        Application.Quit();
+        showAlert("Asklamation","Are you sure want to quit game?", delegate {
+            Debug.Log("quitgame");
+            Application.Quit();
+        },delegate { });        
     }
 
     public void GUI_OKAlert() {
         PanelAlert.SetActive(false);
+        if (buttonAlertOkClick != null)
+            buttonAlertOkClick();
+    }
+
+    public void GUI_NoAlert()
+    {
+        PanelAlert.SetActive(false);
+        if (buttonAlertCancelClick != null)
+            buttonAlertCancelClick();
     }
 
     public void GUI_JoinRandom() {
@@ -155,7 +193,7 @@ public class MainmenuManager : MonoBehaviour
         {
             if (IF_RoomNameToCreate.text.Length <= 0)
             {                
-                showAlert("Game Name", "Game name cannot be empty, please give it name");
+                showAlert("Game Name", "Game name cannot be empty, please give it name", delegate () { }, null);
             }
             else
             {
@@ -177,23 +215,23 @@ public class MainmenuManager : MonoBehaviour
         System.Text.RegularExpressions.MatchCollection mx = System.Text.RegularExpressions.Regex.Matches(s, pattern);
 
         if (s.Length <= 0)
-        {
-            showAlert("Wrong name", "You must give a name before play multiplayer");
+        {            
+            showAlert("Wrong name", "You must give a name before play multiplayer", delegate () { }, null);
             return false;
         }
         else if (s.Length > 10)
         {
-            showAlert("Wrong name", "Name length cannot be more than 10, please correct");
+            showAlert("Wrong name", "Name length cannot be more than 10, please correct", delegate () { }, null);
             return false;
         }
         else if (s.Contains(" "))
         {
-            showAlert("Wrong name", "Name cannot contains space, please correct");
+            showAlert("Wrong name", "Name cannot contains space, please correct", delegate () { }, null);
             return false;
         }
         else if (mx.Count > 0)
         {
-            showAlert("Wrong name", "Name cannot contains punctuation, please correct");            
+            showAlert("Wrong name", "Name cannot contains punctuation, please correct", delegate () { }, null);            
             return false;
         }
         else
@@ -207,29 +245,29 @@ public class MainmenuManager : MonoBehaviour
         switch (errorCode)
         {
             case PlayerIOClient.ErrorCode.RoomAlreadyExists:
-                showAlert("Game Exist", "Game exist, use another game name");                
+                showAlert("Game Exist", "Game exist, use another game name", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.RoomIsFull:
-                showAlert("Game Full", "Game full, join another game");                
+                showAlert("Game Full", "Game full, join another game", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.MissingRoomId:
-                showAlert("Game doesn't exist", "Cannot find game");                
+                showAlert("Game doesn't exist", "Cannot find game", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.UnknownRoom:
-                showAlert("Game doesn't exist", "Game does't exist, try join another");                
+                showAlert("Game doesn't exist", "Game does't exist, try join another", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.UnknownRoomType:
-                showAlert("Game doesn't exist", "Game does't exist, try join another type");                
+                showAlert("Game doesn't exist", "Game does't exist, try join another type", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.NotASearchColumn:
-                showAlert("Game doesn't exist", "Game does't exist, try join another game type");                
+                showAlert("Game doesn't exist", "Game does't exist, try join another game type", delegate () { }, null);                
                 break;
             case PlayerIOClient.ErrorCode.NoServersAvailable:
-                showAlert("Game doesn't exist", "No Server available at this time");
+                showAlert("Game doesn't exist", "No Server available at this time", delegate () { }, null);
                 break;            
             default:
                 Debug.Log(errorCode);
-                showAlert("Unknown", "Unknown error");                
+                showAlert("Unknown", "Unknown error", delegate () { }, null);                
                 break;
         }
     }

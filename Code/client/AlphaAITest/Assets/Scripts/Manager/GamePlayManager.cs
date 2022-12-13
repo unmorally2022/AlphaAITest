@@ -39,10 +39,18 @@ public class GamePlayManager : MonoBehaviour
 
     private int selectedCharacter;
 
+    //alert
     [SerializeField]
     private GameObject PanelAlert;
     [SerializeField]
     private Text TextAlert, TextAlertTitle;
+    private delegate void ButtonAlertOkClick();
+    private ButtonAlertOkClick buttonAlertOkClick;
+    private delegate void ButtonAlertCancelClick();
+    private ButtonAlertCancelClick buttonAlertCancelClick;
+    [SerializeField]
+    private GameObject buttonOkAlert, buttonCancelAlert;
+    //alert end
 
     [SerializeField]
     private GameObject PanelChat;
@@ -114,10 +122,32 @@ public class GamePlayManager : MonoBehaviour
 
     }
 
-    private void showAlert(string title, string msg)
+    private void showAlert(string title, string msg, ButtonAlertOkClick newButtonAlertOkClick, ButtonAlertCancelClick newButtonAlertCancelClick)
     {
         TextAlertTitle.text = title;
         TextAlert.text = msg;
+
+        if (newButtonAlertOkClick == null)
+        {
+            buttonOkAlert.SetActive(false);
+        }
+        else
+        {
+            buttonOkAlert.SetActive(true);
+            buttonAlertOkClick = newButtonAlertOkClick;
+        }
+
+        if (newButtonAlertCancelClick == null)
+        {
+            buttonCancelAlert.SetActive(false);
+        }
+        else
+        {
+            buttonCancelAlert.SetActive(true);
+            buttonAlertCancelClick = newButtonAlertCancelClick;
+        }
+
+
         PanelAlert.SetActive(true);
     }
 
@@ -369,7 +399,7 @@ public class GamePlayManager : MonoBehaviour
     private void OnDisconnectFromRoom(object sender, string reason)
     {
         Debug.Log(string.Format("Disconnect From Game"));
-        showAlert("Disconnected", "Disconnected From Game");        
+        showAlert("Disconnected", "Disconnected From Game", delegate { StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu")); }, null);        
     }
 
     private void sendChat() {        
@@ -445,8 +475,15 @@ public class GamePlayManager : MonoBehaviour
     public void GUI_OKAlert()
     {
         PanelAlert.SetActive(false);
-        //back to mainmenu scene
-        StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu"));
+        if (buttonAlertOkClick != null)
+            buttonAlertOkClick();
+    }
+
+    public void GUI_NoAlert()
+    {
+        PanelAlert.SetActive(false);
+        if (buttonAlertCancelClick != null)
+            buttonAlertCancelClick();
     }
 
     public void GUI_sendChat() {
@@ -454,7 +491,7 @@ public class GamePlayManager : MonoBehaviour
     }
 
     public void GUI_ExitGame() {
-        PlayerIOManager.LeaveRoom();
+        showAlert("Asklamation", "Are you sure want to quit from game?", delegate { PlayerIOManager.LeaveRoom(); }, delegate { });        
     }
 
     public void GUI_Test1()
