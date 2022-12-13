@@ -43,7 +43,6 @@ public class MainmenuManager : MonoBehaviour
         showLoading("Connecting to server");
         AuthToServer();
 
-
         //debug
         iType = 0;//female
     }
@@ -51,9 +50,20 @@ public class MainmenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
-    
+
+    private void OnMessage(PlayerIOClient.Message msg)
+    {
+        //if (PlayerIOManager.joinedroom)
+        //{
+        if (msg.Type == "AbleToJoin")
+        {
+            Debug.Log(msg);
+            StartCoroutine(AppManager.LoadYourAsyncScene("GamePlay"));
+        }
+    }
+
     private void AuthToServer()
     {
         if (PlayerIOManager.isConnectedToserver()) { }
@@ -73,17 +83,23 @@ public class MainmenuManager : MonoBehaviour
 
     private void OnConnectedToServer()
     {
-        hideLoading();        
+        //set delegate to listen to message
+        PlayerIOManager.onMessage = OnMessage;
+
+        hideLoading();
     }
 
-    private void showAlert(string title, string msg, ButtonAlertOkClick newButtonAlertOkClick, ButtonAlertCancelClick newButtonAlertCancelClick) {
+    private void showAlert(string title, string msg, ButtonAlertOkClick newButtonAlertOkClick, ButtonAlertCancelClick newButtonAlertCancelClick)
+    {
         TextAlertTitle.text = title;
         TextAlert.text = msg;
 
-        if (newButtonAlertOkClick == null) {
+        if (newButtonAlertOkClick == null)
+        {
             buttonOkAlert.SetActive(false);
         }
-        else {
+        else
+        {
             buttonOkAlert.SetActive(true);
             buttonAlertOkClick = newButtonAlertOkClick;
         }
@@ -92,11 +108,12 @@ public class MainmenuManager : MonoBehaviour
         {
             buttonCancelAlert.SetActive(false);
         }
-        else {
+        else
+        {
             buttonCancelAlert.SetActive(true);
             buttonAlertCancelClick = newButtonAlertCancelClick;
         }
-            
+
 
         PanelAlert.SetActive(true);
     }
@@ -107,13 +124,14 @@ public class MainmenuManager : MonoBehaviour
         PanelLoading.SetActive(true);
     }
 
-    private void hideLoading() {
+    private void hideLoading()
+    {
         PanelLoading.SetActive(false);
     }
 
     private void CreateRoom(string RoomId)
     {
-        showLoading("Joining Game " + RoomId);       
+        showLoading("Joining Game " + RoomId);
 
         PlayerIOManager.onCreateRoomError = delegate (PlayerIOClient.ErrorCode errorCode)
         {
@@ -121,7 +139,7 @@ public class MainmenuManager : MonoBehaviour
             RoomErrorMessage(errorCode);
         };
         PlayerIOManager.onCreatedRoom = delegate (string SuccessCallback)
-        {            
+        {
             JoinRoomWithId(RoomId);
         };
         PlayerIOManager.CreateRoom(RoomId);
@@ -129,27 +147,26 @@ public class MainmenuManager : MonoBehaviour
 
     private void JoinRandomRoom()
     {
-        showLoading( "Joining Game");
-        
+        showLoading("Joining Game");
+
         PlayerIOManager.onJoinRoomError = delegate (PlayerIOClient.ErrorCode errorCode)
         {
             hideLoading();
             RoomErrorMessage(errorCode);
         };
         PlayerIOManager.onJoinedRoom = delegate ()
-        {            
-            StartCoroutine(  AppManager.LoadYourAsyncScene("GamePlay"));
-            //no action here because server will broadcast player join, and it will process when received message
+        {
+            
         };
-        //PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
-        //PlayerIOManager.onCreateJoinRoomError = OnCreateJoinRoomError;
+        PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
+        PlayerIOManager.onCreateJoinRoomError = OnCreateJoinRoomError;
         PlayerIOManager.JoinRandomRoom();
     }
 
     private void JoinRoomWithId(string RoomId)
     {
         showLoading("Joining Game " + RoomId);
-        
+
         PlayerIOManager.onJoinRoomError = delegate (PlayerIOClient.ErrorCode errorCode)
         {
             hideLoading();
@@ -157,24 +174,38 @@ public class MainmenuManager : MonoBehaviour
         };
         PlayerIOManager.onJoinedRoom = delegate ()
         {
-            StartCoroutine(AppManager.LoadYourAsyncScene("GamePlay"));
-            //no action here because server will broadcast player join, and it will process when received message
+            Debug.Log(string.Format("onJoinedRoom "));            
         };
-        //PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
-        //PlayerIOManager.onCreateJoinRoomError = OnCreateJoinRoomError;
+        PlayerIOManager.onDisconnectedFromRoom = OnDisconnectFromRoom;
+        PlayerIOManager.onCreateJoinRoomError = OnCreateJoinRoomError;
         PlayerIOManager.JoinRoomWithId(RoomId);
     }
+
+    private void OnDisconnectFromRoom(object sender, string reason)
+    {
+        Debug.Log(string.Format("OnDisconnectFromRoom {0}", reason));        
+        showAlert("Disconnected", "Cannot join room", delegate { hideLoading(); }, null);
+    }
+
+    private void OnCreateJoinRoomError(PlayerIOClient.ErrorCode errorCode)
+    {
+        RoomErrorMessage(errorCode);
+    }
+
+
 
     //GUI -------------------
     public void GUI_ExitGame()
     {
-        showAlert("Asklamation","Are you sure want to quit game?", delegate {
+        showAlert("Asklamation", "Are you sure want to quit game?", delegate
+        {
             Debug.Log("quitgame");
             Application.Quit();
-        },delegate { });        
+        }, delegate { });
     }
 
-    public void GUI_OKAlert() {
+    public void GUI_OKAlert()
+    {
         PanelAlert.SetActive(false);
         if (buttonAlertOkClick != null)
             buttonAlertOkClick();
@@ -187,17 +218,19 @@ public class MainmenuManager : MonoBehaviour
             buttonAlertCancelClick();
     }
 
-    public void GUI_JoinRandom() {
+    public void GUI_JoinRandom()
+    {
         if (checkName(IF_username.text))
         {
             JoinRandomRoom();
         }
     }
-    public void GUI_CreateJoinRoom() {
+    public void GUI_CreateJoinRoom()
+    {
         if (checkName(IF_username.text))
         {
             if (IF_RoomNameToCreate.text.Length <= 0)
-            {                
+            {
                 showAlert("Game Name", "Game name cannot be empty, please give it name", delegate () { }, null);
             }
             else
@@ -206,7 +239,8 @@ public class MainmenuManager : MonoBehaviour
             }
         }
     }
-    public void GUI_JoinRoom() {
+    public void GUI_JoinRoom()
+    {
         if (checkName(IF_username.text))
         {
             JoinRoomWithId(IF_RoomNameToJoin.text);
@@ -214,13 +248,14 @@ public class MainmenuManager : MonoBehaviour
     }
     //GUI END -------------------
 
-    private bool checkName(string s) {
+    private bool checkName(string s)
+    {
         string pattern = @"[\p{P}\p{S}-[._]]"; // added \p{S} to get ^,~ and ` (among others)
                                                //string test = @"_""'a:;%^&*~`bc!@#.,?";
         System.Text.RegularExpressions.MatchCollection mx = System.Text.RegularExpressions.Regex.Matches(s, pattern);
 
         if (s.Length <= 0)
-        {            
+        {
             showAlert("Wrong name", "You must give a name before play multiplayer", delegate () { }, null);
             return false;
         }
@@ -236,7 +271,7 @@ public class MainmenuManager : MonoBehaviour
         }
         else if (mx.Count > 0)
         {
-            showAlert("Wrong name", "Name cannot contains punctuation, please correct", delegate () { }, null);            
+            showAlert("Wrong name", "Name cannot contains punctuation, please correct", delegate () { }, null);
             return false;
         }
         else
@@ -250,29 +285,29 @@ public class MainmenuManager : MonoBehaviour
         switch (errorCode)
         {
             case PlayerIOClient.ErrorCode.RoomAlreadyExists:
-                showAlert("Game Exist", "Game exist, use another game name", delegate () { }, null);                
+                showAlert("Game Exist", "Game exist, use another game name", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.RoomIsFull:
-                showAlert("Game Full", "Game full, join another game", delegate () { }, null);                
+                showAlert("Game Full", "Game full, join another game", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.MissingRoomId:
-                showAlert("Game doesn't exist", "Cannot find game", delegate () { }, null);                
+                showAlert("Game doesn't exist", "Cannot find game", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.UnknownRoom:
-                showAlert("Game doesn't exist", "Game does't exist, try join another", delegate () { }, null);                
+                showAlert("Game doesn't exist", "Game does't exist, try join another", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.UnknownRoomType:
-                showAlert("Game doesn't exist", "Game does't exist, try join another type", delegate () { }, null);                
+                showAlert("Game doesn't exist", "Game does't exist, try join another type", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.NotASearchColumn:
-                showAlert("Game doesn't exist", "Game does't exist, try join another game type", delegate () { }, null);                
+                showAlert("Game doesn't exist", "Game does't exist, try join another game type", delegate () { }, null);
                 break;
             case PlayerIOClient.ErrorCode.NoServersAvailable:
                 showAlert("Game doesn't exist", "No Server available at this time", delegate () { }, null);
-                break;            
+                break;
             default:
                 Debug.Log(errorCode);
-                showAlert("Unknown", "Unknown error", delegate () { }, null);                
+                showAlert("Unknown", "Unknown error", delegate () { }, null);
                 break;
         }
     }

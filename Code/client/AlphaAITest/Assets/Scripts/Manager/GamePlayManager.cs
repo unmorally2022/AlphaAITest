@@ -87,6 +87,8 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField]
     private UnityStandardAssets.Cameras.LookAtCamera[] LookAtCameraSelection;
 
+    private bool LeaveByPlayer = false;
+
     private void Awake()
     {
         AppManager.gameplayState = AppManager.GameplayState.iddle;
@@ -98,6 +100,8 @@ public class GamePlayManager : MonoBehaviour
     void Start()
     {
         Application.runInBackground = true;
+
+        LeaveByPlayer = false;
 
         //set delegate to listen to message
         PlayerIOManager.onMessage = OnMessage;
@@ -193,11 +197,7 @@ public class GamePlayManager : MonoBehaviour
     {        
         //if (PlayerIOManager.joinedroom)
         //{
-        if (msg.Type == "PlayerJoined")
-        {
-            Debug.Log(msg);
-        }
-        else if (msg.Type == "RequestPlayers")
+        if (msg.Type == "RequestPlayers")
         {
 
             Debug.Log(msg);
@@ -416,8 +416,14 @@ public class GamePlayManager : MonoBehaviour
 
     private void OnDisconnectFromRoom(object sender, string reason)
     {
-        Debug.Log(string.Format("Disconnect From Game"));
-        showAlert("Disconnected", "Disconnected From Game", delegate { StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu")); }, null);        
+        Debug.Log(string.Format("Disconnect From Game {0}", reason));
+        if (LeaveByPlayer) {
+            StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu"));
+        }
+        else
+        {
+            showAlert("Disconnected", "Disconnected From Game", delegate { StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu")); }, null);
+        }
     }
 
     private void sendChat() {        
@@ -521,7 +527,10 @@ public class GamePlayManager : MonoBehaviour
     }
 
     public void GUI_ExitGame() {
-        showAlert("Asklamation", "Are you sure want to quit from game?", delegate { PlayerIOManager.LeaveRoom(); }, delegate { });        
+        showAlert("Asklamation", "Are you sure want to quit from game?", delegate {
+            LeaveByPlayer = true;
+            PlayerIOManager.LeaveRoom();
+        }, delegate { });        
     }
 
     public void GUI_Test1()
