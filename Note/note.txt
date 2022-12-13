@@ -1,7 +1,8 @@
-- coin score
+*- coin score
 *- show name in character
-- win loose condition
+*- game result
 * - chat
+* character selection
  
 
 - randomize chjaracter spawn point
