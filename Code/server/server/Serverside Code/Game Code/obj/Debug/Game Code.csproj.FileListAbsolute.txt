@@ -41,3 +41,12 @@ C:\Users\unmoraly\Documents\Code\server\Serverside Code\Game Code\obj\Debug\Game
 C:\Users\unmoraly\Documents\Code\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.dll
 C:\Users\unmoraly\Documents\Code\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.pdb
 C:\Users\unmoraly\Documents\Code\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.AssemblyReference.cache
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\bin\Debug\AlphaAIServer.dll
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\bin\Debug\AlphaAIServer.pdb
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\bin\Debug\Player.IO GameLibrary.dll
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\bin\Debug\Player.IO GameLibrary.xml
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.CoreCompileInputs.cache
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.CopyComplete
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.dll
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\AlphaAIServer.pdb
+C:\Users\unmoraly\Desktop\Code\server\server\Serverside Code\Game Code\obj\Debug\Game Code.csproj.AssemblyReference.cache

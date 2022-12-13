@@ -8,24 +8,25 @@ namespace AlphaAIServer
     public class Player : BasePlayer
     {
         public int Score = 0;
-        public int itype = 0;
+        public int iType = 0;
         public bool isReady = false;
         public string name = string.Empty;
         public string UserId = string.Empty;
-        public int CurrentIndex = -1;//the index taken in the array of joined player
+        public int SpawnPointIndex = 0;
+        //public int CurrentIndex = -1;//the index taken in the array of joined player
     }
 
-    //public class Toad {
-    //	public int id = 0;
-    //	public float posx = 0;
-    //	public float posz = 0;
-    //}
+    public class Coin {
+        public int id;
+        public int SpawnIndex;
+        public int isSpawned;
+    }
 
     [RoomType("Death Match")]
     public class GameCode : Game<Player>
     {
-        //private int last_toad_id = 0;
-        //private List<Toad> Toads = new List<Toad>();
+        private int last_coin_id = 0;
+        private Coin[] Coins;
 
         //private List<string> PlayersJoinedId;
         //private string[] PlayersJoinedId;//, PlayersJoinedName;
@@ -55,18 +56,16 @@ namespace AlphaAIServer
 
             //// spawn 10 toads at server start
             //System.Random random = new System.Random();
-            //for(int x = 0; x < 10; x++) {
-
-            //	int px = random.Next(-9, 9);
-            //	int pz = random.Next(-9, 9);
-            //	Toad temp = new Toad();
-            //	temp.id = last_toad_id;
-            //	temp.posx = px;
-            //	temp.posz = pz;
-            //	Toads.Add(temp);
-            //	last_toad_id++;
-
-            //}
+            Coins = new Coin[20];
+            for (int x = 0; x < 20; x++)
+            {                
+                Coin coin = new Coin();
+                coin.id = last_coin_id;
+                coin.SpawnIndex = x;
+                coin.isSpawned = 1;
+                Coins[x] = coin;
+                last_coin_id++;
+            }
 
             //// respawn new toads each 5 seconds
             //AddTimer(respawntoads, 5000);
@@ -125,10 +124,26 @@ namespace AlphaAIServer
                 //set room visibility to false
                 Visible = false;
 
-                Broadcast("StartGame", 1);
+                //randomize coin position
+                for (int i = 0; i < 20; i++)
+                {
+                    for (int j = 0; j < 20; j++)
+                    {
+                        int tempPos = Coins[i].SpawnIndex;
+                        Coins[i].SpawnIndex = Coins[j].SpawnIndex;
+                        Coins[j].SpawnIndex = tempPos;
+                    }
+                }
+
+                for (int i = 0; i < 10; i++)
+                {                    
+                    Broadcast("Coin", Coins[i].id, Coins[i].SpawnIndex, Coins[i].isSpawned);
+                }
+
+                Broadcast("StartGame");
+
                 SeccondInGameLeft = 120;
                 timerInGame = AddTimer(InGameCountDown, 1000);
-
             }
             else {
                 Broadcast("StartingGame", SeccondToStart);
@@ -151,26 +166,16 @@ namespace AlphaAIServer
         }
 
         private void EndGame() {
-            // scoring system
-            Player winner = new Player();
-            int maxscore = -1;
-            foreach (Player pl in Players)
+            Broadcast("GameFinish");
+            var ordered = Players.OrderBy(o => o.Score);
+            int index = 0;
+            int star = 3;
+            foreach (Player pl in ordered)
             {
-                if (pl.Score > maxscore)
-                {
-                    winner = pl;
-                    maxscore = pl.Score;
-                }
-            }
-
-            // broadcast who won the round
-            if (winner.Score > 0)
-            {
-                Broadcast("GameWinner", winner.UserId);
-            }
-            else
-            {
-                Broadcast("GameDraw");
+                Broadcast("GameResult", index, star, pl.UserId, pl.name, pl.Score);
+                index++;
+                if (star > 0)
+                    star--;
             }
 
         }
@@ -178,116 +183,40 @@ namespace AlphaAIServer
         //This method is called before a user joins a room.
         //If you return false, the user is not allowed to join.
         public override bool AllowUserJoin(Player player)
-        {
-            //if (Players.Count() < 10 && !RoomClosed)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
-            return true;
+        {            
+            if (RoomClosed)
+                return false;
+            else
+                return true;
         }
 
-        //private void resetgame() {
-        //	// scoring system
-        //	Player winner = new Player();
-        //	int maxscore = -1;
-        //	foreach(Player pl in Players) {
-        //		if(pl.toadspicked > maxscore) {
-        //			winner = pl;
-        //			maxscore = pl.toadspicked;
-        //		}
-        //	}
-
-        //	// broadcast who won the round
-        //	if(winner.toadspicked > 0) {
-        //		Broadcast("Chat", "Server", winner.ConnectUserId + " picked " + winner.toadspicked + " Toadstools and won this round.");
-        //	} else {
-        //		Broadcast("Chat", "Server", "No one won this round.");
-        //	}
-
-        //	// reset everyone's score
-        //	foreach(Player pl in Players) {
-        //		pl.toadspicked = 0;
-        //	}
-        //	Broadcast("ToadCount", 0);
-        //}
-
-        //private void respawntoads() {
-        //	if(Toads.Count == 10)
-        //		return;
-
-        //	System.Random random = new System.Random();
-        //	// create new toads if there are less than 10
-        //	for(int x = 0; x < 10 - Toads.Count; x++) {
-        //		int px = random.Next(-9, 9);
-        //		int pz = random.Next(-9, 9);
-        //		Toad temp = new Toad();
-        //		temp.id = last_toad_id;
-        //		temp.posx = px;
-        //		temp.posz = pz;
-        //		Toads.Add(temp);
-        //		last_toad_id++;
-
-        //		// broadcast new toad information to all players
-        //		Broadcast("Toad", temp.id, temp.posx, temp.posz);
-        //	}
-        //}
+        
 
         // This method is called when the last player leaves the room, and it's closed down.
         public override void GameClosed()
         {
-            Console.WriteLine("RoomId: " + RoomId);
+            Console.WriteLine("Game Closed RoomId: " + RoomId);
         }
 
         // This method is called whenever a player joins the game
         public override void UserJoined(Player player)
         {
-            //PlayersJoinedCount++;
-
-            //for (int i = 0; i < PlayersJoinedId.Length; i++)
-            //{
-            //    if (PlayersJoinedId[i] == string.Empty)
-            //    {
-            //        player.UserId = player.ConnectUserId;
-            //        player.CurrentIndex = i;
-            //        player.name = player.JoinData["userName"];
-            //        PlayersJoinedId[i] = player.UserId;
-            //        break;
-            //    }
-            //}
+            
 
             player.UserId = player.ConnectUserId;            
             player.name = player.JoinData["userName"];
-            player.isReady = false;            
+            player.isReady = false;
+            Random rand = new Random();
+            player.SpawnPointIndex = rand.Next(0, 4);
 
-            //player is the new player join into room
-            foreach (Player pl in Players)
-            {
-                foreach (Player pl1 in Players)
-                {
-                    //send others userid to every one except it self
-                    if (pl.UserId != pl1.UserId && pl1.UserId != string.Empty)
-                    {
-                        pl.Send("OthersJoined", pl1.UserId, pl1.CurrentIndex, pl1.name);
-                    }
-                }
-
-            }
-
-            //// send current toadstool info to the player
-            //foreach(Toad t in Toads) {
-            //	player.Send("Toad", t.id, t.posx, t.posz);
-            //}
+            
         }
 
         // This method is called when a player leaves the game
         public override void UserLeft(Player player)
         {
             //PlayersJoinedCount--;
-            Broadcast("PlayerLeft", player.ConnectUserId, player.CurrentIndex);
+            Broadcast("PlayerLeft", player.ConnectUserId);
             //for (int i = 0; i < Players.Count(); i++)
             //{
             //    if (PlayersJoinedId[i] == player.ConnectUserId)
@@ -318,54 +247,63 @@ namespace AlphaAIServer
         {
             switch (message.Type)
             {
+                //debug purpose
+                case "test1":
+                    Random rand = new Random();                    
+                    player.Score = rand.Next(0, 10);
+                    player.Send("UpdateScore", player.Score);
+                    break;
+                case "test2":
+                    EndGame();
+                    break;
+                case "test3":
+
+                    break;
+                //debug purpose end
+                case "RequestPlayers":
+                    //tell others joined player that player is joined
+                    foreach (Player pl in Players)
+                    {
+                        foreach (Player pl1 in Players)
+                        {
+                            //send others userid to every one except it self
+                            if (pl.UserId != pl1.UserId && pl1.UserId != string.Empty)
+                            {
+                                pl.Send("RequestPlayers", pl1.UserId, pl1.name, pl1.isReady, pl1.iType, pl1.SpawnPointIndex);
+                            }
+                        }
+                    }
+                    break;
                 case "SetReady":
                     player.isReady = message.GetBoolean(1);
-                    Random rnd = new Random();
-                    Broadcast("SetReady", player.ConnectUserId, message.GetInt(0), message.GetBoolean(1), rnd.Next(0, 4));
+                    player.iType = message.GetInt(0);
+                    Broadcast("SetReady", player.ConnectUserId, player.iType, player.isReady, player.SpawnPointIndex);
+                    //pl.Send  ("OthersJoined", pl1.UserId, pl1.name, pl1.isReady, pl1.itype, pl.SpawnPointIndex);
                     break;
                 case "Move":
                     Broadcast("Move",
                         player.ConnectUserId,
                         message.GetFloat(0), message.GetFloat(1), message.GetFloat(2),
                         message.GetFloat(3), message.GetFloat(4), message.GetFloat(5),
-                        message.GetFloat(6)//GetRunSpeed                        
+                        message.GetFloat(6),//forward
+                        message.GetFloat(7),//turn
+                        message.GetBoolean(8),//ongground
+                        message.GetFloat(9)
                         );
                     break;                
                 case "CharacterState":
                     Broadcast("CharacterState", player.ConnectUserId, message.GetFloat(0));
                     break;
-                case "Jumping":
-                    Broadcast("Jumping", player.ConnectUserId, message.GetBoolean(0));
-                    break;
-                case "SetEnvironmet":
-                    Broadcast("SetEnvironmet", player.ConnectUserId, message.GetBoolean(0), message.GetBoolean(1), message.GetBoolean(2));
-                    break;
-                //case "SetRunSpeed":
-                //    Broadcast("SetRunSpeed", player.ConnectUserId, message.GetFloat(0));
-                //    break;
-
-                //case "MoveHarvest":
-                //	// called when a player clicks on a harvesting node
-                //	// sends back a harvesting command to the player, a move command to everyone else
-                //	player.posx = message.GetFloat(0);
-                //	player.posz = message.GetFloat(1);
-                //	foreach (Player pl in Players)
-                //	{
-                //		if (pl.ConnectUserId != player.ConnectUserId)
-                //		{
-                //			pl.Send("Move", player.ConnectUserId, player.posx, player.posz);
-                //		}
-                //	}
-                //	player.Send("Harvest", player.ConnectUserId, player.posx, player.posz);
-                //	break;
-                case "Chat":
-                    foreach (Player pl in Players)
-                    {
-                        if (pl.ConnectUserId != player.ConnectUserId)
-                        {
-                            pl.Send("Chat", player.ConnectUserId, message.GetString(0));
-                        }
+                case "CoinHit":
+                    Player _player = Players.FirstOrDefault(c => c.UserId.Equals(player.ConnectUserId));
+                    if (_player != null) {
+                        _player.Score++;
+                        player.Send("UpdateScore", player.Score);
                     }
+                    Broadcast("CoinHit", message.GetInt(0), message.GetInt(1));
+                    break;
+                case "SendChat":
+                    Broadcast("SendChat", player.ConnectUserId, message.GetString(0));
                     break;
             }
         }

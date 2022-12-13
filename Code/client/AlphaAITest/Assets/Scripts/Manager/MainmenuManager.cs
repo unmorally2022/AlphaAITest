@@ -135,6 +135,11 @@ public class MainmenuManager : MonoBehaviour
     }
 
     //GUI -------------------
+    public void GUI_ExitGame()
+    {
+        Application.Quit();
+    }
+
     public void GUI_OKAlert() {
         PanelAlert.SetActive(false);
     }
