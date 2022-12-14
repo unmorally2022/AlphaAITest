@@ -70,7 +70,7 @@ public class GamePlayManager : MonoBehaviour
     private Transform CoinParent;
 
     [SerializeField]
-    private Dictionary<int,GameObject> Coins;
+    private Dictionary<int, GameObject> Coins;
 
     [SerializeField]
     private Transform[] CoinSpawnPoint;
@@ -81,7 +81,7 @@ public class GamePlayManager : MonoBehaviour
     private ResultChild1 PrefabResultChild1;
     [SerializeField]
     private Transform ResultChild1Parent;
-        
+
     [SerializeField]
     private Animator[] AnimatorCharSelection;
     [SerializeField]
@@ -117,7 +117,7 @@ public class GamePlayManager : MonoBehaviour
         thirdPersonUserControl.SetPlayerIOName(AppManager.PlayerIOName);
 
         TextRoomStatus.gameObject.SetActive(false);
-        
+
 
         selectedCharacter = 0;
         GUI_SelectGender(selectedCharacter);
@@ -178,14 +178,16 @@ public class GamePlayManager : MonoBehaviour
     private void StartGame()
     {
         PanelScore.SetActive(true);
-        AppManager.gameplayState = AppManager.GameplayState.play;        
+        AppManager.gameplayState = AppManager.GameplayState.play;
     }
 
-    public void updateScore(int newScore) {
+    public void updateScore(int newScore)
+    {
         TextScore.text = string.Format("Score : {0}", newScore.ToString());
     }
 
-    private void FinishGame() {
+    private void FinishGame()
+    {
         TextTimeLeft.text = "00:00";
         PanelResult.SetActive(true);
         AppManager.gameplayState = AppManager.GameplayState.iddle;
@@ -194,7 +196,7 @@ public class GamePlayManager : MonoBehaviour
 
     //playerio event
     private void OnMessage(PlayerIOClient.Message msg)
-    {        
+    {
         //if (PlayerIOManager.joinedroom)
         //{
         if (msg.Type == "RequestPlayers")
@@ -237,8 +239,8 @@ public class GamePlayManager : MonoBehaviour
 
         }
         else if (msg.Type == "UpdateScore")
-        {            
-            updateScore(msg.GetInt(0));            
+        {
+            updateScore(msg.GetInt(0));
         }
         else if (msg.Type == "SetReady")
         {
@@ -304,36 +306,54 @@ public class GamePlayManager : MonoBehaviour
             TextTimeLeft.text = stime;
 
         }
-        else if (msg.Type == "GameFinish") {
+        else if (msg.Type == "GameFinish")
+        {
             FinishGame();
-        }        
+        }
         else if (msg.Type == "GameResult")
         {
             Debug.Log("GameResult");
             ResultChild1 resultChild1 = Instantiate(PrefabResultChild1, ResultChild1Parent);
-            resultChild1.Init(msg.GetInt(1),msg.GetInt(4), msg.GetString(3));
+            resultChild1.Init(msg.GetInt(1), msg.GetInt(4), msg.GetString(3));
 
-            if (msg.GetInt(1) > 0 && msg.GetInt(4)>0 && msg.GetString(2) == thirdPersonUserControl.getPlayerIOId())
+            if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControl.getPlayerIOId())
             {
-                thirdPersonUserControl.m_Character.m_Animator.SetBool("Win",true);
+                thirdPersonUserControl.m_Character.m_Animator.SetBool("Win", true);
             }
-            else if (msg.GetInt(1) > 0 && msg.GetInt(4) > 0 && msg.GetString(2) == thirdPersonUserControlMPs[msg.GetString(2)].getPlayerIOId())
+            else if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControlMPs[msg.GetString(2)].getPlayerIOId())
             {
                 thirdPersonUserControlMPs[msg.GetString(2)].m_CharacterMP.m_Animator.SetBool("Win", true);
             }
-                //StopGame(msg);
+            //StopGame(msg);
 
-            }        
+        }
         else if (msg.Type == "PlayerLeft")
         {
-            //Debug.Log(string.Format("{0}:{1}", "PlayerLeft", msg));
+            Debug.Log(string.Format("{0}:{1}", "PlayerLeft", msg));
+            if (msg.GetString(0) != PlayerIOManager.PlayerIOid)
+            {
+                if (thirdPersonUserControlMPs.ContainsKey(msg.GetString(0)))
+                {
+                    if (thirdPersonUserControlMPs[msg.GetString(0)].m_CharacterMP != null)
+                    {
+                        Destroy(thirdPersonUserControlMPs[msg.GetString(0)].m_CharacterMP.gameObject);
+                    }
+
+                    //destroy the controller
+                    Destroy(thirdPersonUserControlMPs[msg.GetString(0)].gameObject);
+
+                    //remove from dictionary
+                    thirdPersonUserControlMPs.Remove(msg.GetString(0));
+                }
+            }
         }
         else if (msg.Type == "CoinHit")
         {
             //hide coin
-            if (msg.GetInt(1) == 0) {
+            if (msg.GetInt(1) == 0)
+            {
                 Coins[msg.GetInt(0)].SetActive(false);
-            }            
+            }
         }
         else if (msg.Type == "Coin")
         {
@@ -417,7 +437,8 @@ public class GamePlayManager : MonoBehaviour
     private void OnDisconnectFromRoom(object sender, string reason)
     {
         Debug.Log(string.Format("Disconnect From Game {0}", reason));
-        if (LeaveByPlayer) {
+        if (LeaveByPlayer)
+        {
             StartCoroutine(AppManager.LoadYourAsyncScene("MainMenu"));
         }
         else
@@ -426,12 +447,14 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-    private void sendChat() {        
+    private void sendChat()
+    {
         PlayerIOManager.SendMsg("SendChat", IFChat.text);
         IFChat.text = "";
     }
 
-    private void addChat(string chat) {
+    private void addChat(string chat)
+    {
         TextChat.text = TextChat.text + "\n" + chat;
         int numLines = System.Text.RegularExpressions.Regex.Matches(TextChat.text, System.Environment.NewLine).Count;
         if (numLines > 15)
@@ -439,15 +462,15 @@ public class GamePlayManager : MonoBehaviour
             string str = TextChat.text;
             string output = str;
             while (numLines > 15)
-            {                
+            {
                 string[] lines = str
                     .Split(System.Environment.NewLine.ToCharArray())
                     .Skip(1)
                     .ToArray();
 
-                output = string.Join(System.Environment.NewLine, lines);                
+                output = string.Join(System.Environment.NewLine, lines);
                 numLines = System.Text.RegularExpressions.Regex.Matches(output, System.Environment.NewLine).Count;
-                if(numLines>15)
+                if (numLines > 15)
                     str = output;
             }
             TextChat.text = output;
@@ -459,13 +482,15 @@ public class GamePlayManager : MonoBehaviour
     public void GUI_SelectGender(int newSelectedGender)
     {
         selectedCharacter = newSelectedGender;
-        for (int i = 0; i < AnimatorCharSelection.Length;i++) {
+        for (int i = 0; i < AnimatorCharSelection.Length; i++)
+        {
             if (i == selectedCharacter)
             {
                 AnimatorCharSelection[i].SetBool("Selected", true);
                 LookAtCameraSelection[i].enabled = true;
             }
-            else {
+            else
+            {
                 AnimatorCharSelection[i].SetBool("Selected", false);
                 LookAtCameraSelection[i].enabled = false;
             }
@@ -477,7 +502,7 @@ public class GamePlayManager : MonoBehaviour
         //create character
         //selectedCharacter = Random.Range(0,1);
 
-        
+
         switch (selectedCharacter)
         {
             case 0:
@@ -496,8 +521,18 @@ public class GamePlayManager : MonoBehaviour
         freeLookCam.enabled = true;
         freeLookCam.transform.position = thirdPersonUserControl.m_Character.transform.position;
         //freeLookCam.setCursorLock(true);
-        PanelCharSelection.SetActive(false);
+        //PanelCharSelection.SetActive(false);
+        for (int i = 0; i < AnimatorCharSelection.Length; i++)
+        {
+            Destroy(AnimatorCharSelection[i].gameObject);
+            Destroy(LookAtCameraSelection[i].gameObject);
+        }
+        foreach (Transform child in PanelCharSelection.transform)
+        {
+            Destroy(child.gameObject);
+        }
         Destroy(PanelCharSelection);
+
 
         TextRoomStatus.gameObject.SetActive(true);
 
@@ -522,15 +557,18 @@ public class GamePlayManager : MonoBehaviour
             buttonAlertCancelClick();
     }
 
-    public void GUI_sendChat() {
+    public void GUI_sendChat()
+    {
         sendChat();
     }
 
-    public void GUI_ExitGame() {
-        showAlert("Asklamation", "Are you sure want to quit from game?", delegate {
+    public void GUI_ExitGame()
+    {
+        showAlert("Asklamation", "Are you sure want to quit from game?", delegate
+        {
             LeaveByPlayer = true;
             PlayerIOManager.LeaveRoom();
-        }, delegate { });        
+        }, delegate { });
     }
 
     public void GUI_Test1()
