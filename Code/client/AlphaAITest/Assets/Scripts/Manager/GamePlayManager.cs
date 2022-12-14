@@ -521,17 +521,18 @@ public class GamePlayManager : MonoBehaviour
         freeLookCam.enabled = true;
         freeLookCam.transform.position = thirdPersonUserControl.m_Character.transform.position;
         //freeLookCam.setCursorLock(true);
-        //PanelCharSelection.SetActive(false);
+        //PanelCharSelection.SetActive(false);        
         for (int i = 0; i < AnimatorCharSelection.Length; i++)
         {
+            Destroy(AnimatorCharSelection[i].transform.parent.gameObject);
             Destroy(AnimatorCharSelection[i].gameObject);
             Destroy(LookAtCameraSelection[i].gameObject);
         }
-        foreach (Transform child in PanelCharSelection.transform)
-        {
-            Destroy(child.gameObject);
-        }
-        Destroy(PanelCharSelection);
+        //foreach (Transform child in PanelCharSelection.transform)
+        //{
+        //    Destroy(child.gameObject);
+        //}
+        Destroy(PanelCharSelection.gameObject);
 
 
         TextRoomStatus.gameObject.SetActive(true);
