@@ -62,7 +62,7 @@ namespace AlphaAIServer
                 Coin coin = new Coin();
                 coin.id = last_coin_id;
                 coin.SpawnIndex = x;
-                coin.isSpawned = 1;
+                coin.isSpawned = 0;
                 Coins[x] = coin;
                 last_coin_id++;
             }
@@ -136,7 +136,8 @@ namespace AlphaAIServer
                 }
 
                 for (int i = 0; i < 10; i++)
-                {                    
+                {
+                    Coins[i].isSpawned = 1;
                     Broadcast("Coin", Coins[i].id, Coins[i].SpawnIndex, Coins[i].isSpawned);
                 }
 
@@ -172,10 +173,17 @@ namespace AlphaAIServer
             int star = 3;
             foreach (Player pl in ordered)
             {
-                Broadcast("GameResult", index, star, pl.UserId, pl.name, pl.Score);
+                if (pl.Score > 0)
+                {
+                    Broadcast("GameResult", index, star, pl.UserId, pl.name, pl.Score);
+                    if (star > 0)
+                        star--;
+                }
+                else {
+                    Broadcast("GameResult", index, 0, pl.UserId, pl.name, pl.Score);
+                }
                 index++;
-                if (star > 0)
-                    star--;
+                
             }
 
         }
@@ -206,6 +214,8 @@ namespace AlphaAIServer
             player.isReady = false;
             Random rand = new Random();
             player.SpawnPointIndex = rand.Next(0, 4);
+
+            player.Send("AbleToJoin", player.ConnectUserId);
         }
 
         // This method is called when a player leaves the game
@@ -244,17 +254,17 @@ namespace AlphaAIServer
             switch (message.Type)
             {
                 //debug purpose
-                case "test1":
-                    Random rand = new Random();                    
-                    player.Score = rand.Next(0, 10);
-                    player.Send("UpdateScore", player.Score);
-                    break;
-                case "test2":
-                    SeccondInGameLeft = 0;
-                    break;
-                case "test3":
+                //case "test1":
+                //    Random rand = new Random();                    
+                //    player.Score = rand.Next(0, 10);
+                //    player.Send("UpdateScore", player.Score);
+                //    break;
+                //case "test2":
+                //    SeccondInGameLeft = 0;
+                //    break;
+                //case "test3":
 
-                    break;
+                //    break;
                 //debug purpose end
                 case "RequestPlayers":
                     //tell others joined player that player is joined
@@ -296,7 +306,30 @@ namespace AlphaAIServer
                         _player.Score++;
                         player.Send("UpdateScore", player.Score);
                     }
+
+                    for (int i = 0; i < 20; i++)
+                    {
+                        if (Coins[i].id == message.GetInt(0))
+                        {
+                            Coins[i].isSpawned = message.GetInt(1);
+                            break;
+                        }
+                    }
+
                     Broadcast("CoinHit", message.GetInt(0), message.GetInt(1));
+                    //check for other coin, if all is taken then show result
+                    bool isAllTaken = true;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        if (Coins[i].isSpawned == 1) {
+                            isAllTaken = false;
+                            break;
+                        }
+                    }
+
+                    if (isAllTaken) {
+                        SeccondInGameLeft = 0;
+                    }
                     break;
                 case "SendChat":
                     Broadcast("SendChat", player.ConnectUserId, message.GetString(0));
