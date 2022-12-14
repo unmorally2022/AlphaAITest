@@ -72,6 +72,7 @@ namespace AlphaAITest.Characters.ThirdPerson
 
         public void initPosition(Vector3 newPosition) {
             ObjectToFollow.transform.position = newPosition;
+            m_CharacterMP.transform.position = ObjectToFollow.transform.position;
         }
 
         public void setName()

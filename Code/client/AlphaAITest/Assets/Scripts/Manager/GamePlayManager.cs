@@ -249,7 +249,7 @@ public class GamePlayManager : MonoBehaviour
                 //go to spawn point
                 int spawnIndex = msg.GetInt(3);
                 thirdPersonUserControl.m_Character.gameObject.transform.position = SpawnPoint[spawnIndex].transform.position;
-
+                freeLookCam.transform.position = thirdPersonUserControl.m_Character.transform.position;
                 if (msg.GetBoolean(2) == true)
                 {
                     thirdPersonUserControl.characterState = AppManager.CharacterState.ready;
