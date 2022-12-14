@@ -337,7 +337,7 @@ public class GamePlayManager : MonoBehaviour
         }
         else if (msg.Type == "Coin")
         {
-            Debug.Log(msg);
+            //Debug.Log(msg);
             GameObject coin = Instantiate(PrefabCoin, CoinParent);
             coin.transform.GetChild(0).GetComponent<Coin>().id = msg.GetInt(0);
             coin.transform.position = CoinSpawnPoint[msg.GetInt(1)].position;
