@@ -74,7 +74,7 @@ public static class PlayerIOManager
                 Debug.Log("Successfully connected to Player.IO");
                 client = _client;
                 //debug to localhost
-                client.Multiplayer.DevelopmentServer = new ServerEndpoint("192.168.2.7", 8184);
+                //client.Multiplayer.DevelopmentServer = new ServerEndpoint("192.168.2.7", 8184);
 
                 if (onConnectedToServer != null)
                     onConnectedToServer();
