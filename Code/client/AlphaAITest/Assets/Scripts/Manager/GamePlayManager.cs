@@ -330,7 +330,7 @@ public class GamePlayManager : MonoBehaviour
         }
         else if (msg.Type == "CoinHit")
         {
-            //if hide then do loop find for coin
+            //hide coin
             if (msg.GetInt(1) == 0) {
                 Coins[msg.GetInt(0)].SetActive(false);
             }            
