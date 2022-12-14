@@ -149,6 +149,8 @@ public class MainmenuManager : MonoBehaviour
     {
         showLoading("Joining Game");
 
+        AppManager.PlayerIOName = IF_username.text;
+
         PlayerIOManager.onJoinRoomError = delegate (PlayerIOClient.ErrorCode errorCode)
         {
             hideLoading();
@@ -166,7 +168,7 @@ public class MainmenuManager : MonoBehaviour
     private void JoinRoomWithId(string RoomId)
     {
         showLoading("Joining Game " + RoomId);
-
+        AppManager.PlayerIOName = IF_username.text;
         PlayerIOManager.onJoinRoomError = delegate (PlayerIOClient.ErrorCode errorCode)
         {
             hideLoading();
@@ -221,7 +223,7 @@ public class MainmenuManager : MonoBehaviour
     public void GUI_JoinRandom()
     {
         if (checkName(IF_username.text))
-        {
+        {            
             JoinRandomRoom();
         }
     }
