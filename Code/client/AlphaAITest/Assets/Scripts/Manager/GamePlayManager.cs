@@ -313,11 +313,11 @@ public class GamePlayManager : MonoBehaviour
             ResultChild1 resultChild1 = Instantiate(PrefabResultChild1, ResultChild1Parent);
             resultChild1.Init(msg.GetInt(1),msg.GetInt(4), msg.GetString(3));
 
-            if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControl.getPlayerIOId())
+            if (msg.GetInt(1) > 0 && msg.GetInt(4)>0 && msg.GetString(2) == thirdPersonUserControl.getPlayerIOId())
             {
                 thirdPersonUserControl.m_Character.m_Animator.SetBool("Win",true);
             }
-            else if (msg.GetInt(1) > 0 && msg.GetString(2) == thirdPersonUserControlMPs[msg.GetString(2)].getPlayerIOId())
+            else if (msg.GetInt(1) > 0 && msg.GetInt(4) > 0 && msg.GetString(2) == thirdPersonUserControlMPs[msg.GetString(2)].getPlayerIOId())
             {
                 thirdPersonUserControlMPs[msg.GetString(2)].m_CharacterMP.m_Animator.SetBool("Win", true);
             }
