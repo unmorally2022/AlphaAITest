@@ -449,8 +449,11 @@ public class GamePlayManager : MonoBehaviour
 
     private void sendChat()
     {
-        PlayerIOManager.SendMsg("SendChat", IFChat.text);
-        IFChat.text = "";
+        if (IFChat.text.Trim().Length > 0)
+        {
+            PlayerIOManager.SendMsg("SendChat", IFChat.text);
+            IFChat.text = "";
+        }
     }
 
     private void addChat(string chat)

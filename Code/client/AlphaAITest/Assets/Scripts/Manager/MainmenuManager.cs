@@ -37,8 +37,9 @@ public class MainmenuManager : MonoBehaviour
         PanelLoading.SetActive(false);
         PanelAlert.SetActive(false);
 
-        AppManager.PlayerIOName = "plr" + AppManager.RandomString(4);
-        IF_username.text = AppManager.PlayerIOName;
+        //debug purpose
+        //AppManager.PlayerIOName = "plr" + AppManager.RandomString(4);
+        //IF_username.text = AppManager.PlayerIOName;
 
         showLoading("Connecting to server");
         AuthToServer();
