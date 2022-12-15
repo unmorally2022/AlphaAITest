@@ -1,0 +1,14 @@
+now lets use random join, random join will choose a room that able to be joined, and if there is 
+no room available to join, then it will create new room
+1. fill your name as ussualy
+2. just click random join
+3. now you are in the room with random name,
+4. select your gender now and set ready, or you can set ready later
+5.there is 1 room aavailable to join on server, so if other player join random too,
+then it will join that room, because only one room in the server and available to join
+lets try
+6. now you are in the same room, lets check it with chat
+7. the chat is sent to all player, that prove that those players are in the same room
+8 now select the gender and set ready
+9. i cant move the other player with the team viewer, i still dont know why
+10. game finsihed

@@ -1,0 +1,8 @@
+i am gonna show you the other player name
+that is player1
+and that is player2
+lets create the room and join it
+
+okay it shows player2, thats the name from other player
+and in other pc it shows player1
+ot works yeyy

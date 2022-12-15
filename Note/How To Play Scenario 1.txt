@@ -1,0 +1,14 @@
+1. first need to give a name in name field
+2. and other computer i will give a name, i am using teamviewer to remote that computer
+3. then give a unniq room name
+4. click create room to create room
+5. you are created a room and now can select gender
+6. after select gender, click ready
+7. it will wait until more than 1 player joined in room and ready
+8 now i will join that room with other pc, using teamviewer
+9. fill the room that you want to join, then click join
+10. now you are in the same room, you can select gender also and click ready if you are finished
+11. the game is started you can now get the coin by walking into it, and just hit it with your character
+12. you score in top left of the screen increased, yeeyy
+13. time is finish, and the game is finished, if you have star and your score is more than 0
+    then your character will show dance animation
