@@ -1,3 +1,6 @@
+*** Tested on windows 7 64 and windows 10 home x64
+
+
 *- coin score
 *- show name in character
 *- game result
@@ -5,9 +8,9 @@
 * character selection
  
 
-- randomize chjaracter spawn point
-- randomizr coin spawn point
-- check again
+*- randomize chjaracter spawn point
+*- randomizr coin spawn point
+*- check again
 
 * 1.	A multiplayer system where the player is able to host or join the game
 
