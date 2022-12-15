@@ -7,6 +7,7 @@
 
 - randomize chjaracter spawn point
 - randomizr coin spawn point
+- check again
 
 * 1.	A multiplayer system where the player is able to host or join the game
 
@@ -20,4 +21,4 @@
 
 * 6.	In game player UI system that shows each player’s name
 
-7.	Small mission event for both players to participate. For example: in the game scene, the host player can begin a gameplay event (mission) where each player could collect coins. The player that collects the most coins wins the game. The amount of coins collected by each should be shown by a UI.
+* 7.	Small mission event for both players to participate. For example: in the game scene, the host player can begin a gameplay event (mission) where each player could collect coins. The player that collects the most coins wins the game. The amount of coins collected by each should be shown by a UI.
