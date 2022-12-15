@@ -62,7 +62,7 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField]
     private GameObject PanelScore;
     [SerializeField]
-    private Text TextScore;
+    private Text TextScore, TextName;
 
     [SerializeField]
     private GameObject PrefabCoin;
@@ -178,6 +178,8 @@ public class GamePlayManager : MonoBehaviour
     private void StartGame()
     {
         PanelScore.SetActive(true);
+        TextName.text = AppManager.PlayerIOName;
+
         AppManager.gameplayState = AppManager.GameplayState.play;
     }
 

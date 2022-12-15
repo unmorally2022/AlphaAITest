@@ -39,7 +39,7 @@ public class MainmenuManager : MonoBehaviour
 
         //debug purpose
         //AppManager.PlayerIOName = "plr" + AppManager.RandomString(4);
-        //IF_username.text = AppManager.PlayerIOName;
+        IF_username.text = AppManager.PlayerIOName;
 
         showLoading("Connecting to server");
         AuthToServer();

@@ -28,6 +28,7 @@ public static class AppManager
     static AppManager()
     {
         PlayerIOid = "PL_AlphaAI_" + System.DateTime.UtcNow.ToString(@"yyyyMddhhmmss");
+        PlayerIOName = "";
         Debug.Log(string.Format("Application Manager {0}", PlayerIOid));        
     }
 
